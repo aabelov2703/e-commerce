@@ -1,6 +1,7 @@
 import type { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies'
 
 import type { Config } from '../../payload/payload-types'
+import { CATEGORIES } from '../_graphql/categories'
 import { ORDERS } from '../_graphql/orders'
 import { PAGES } from '../_graphql/pages'
 import { PRODUCTS } from '../_graphql/products'
@@ -20,6 +21,10 @@ const queryMap = {
     query: ORDERS,
     key: 'Orders',
   },
+  categories: {
+    query: CATEGORIES,
+    key: 'Categories',
+  },
 }
 
 export const fetchDocs = async <T>(
@@ -34,7 +39,6 @@ export const fetchDocs = async <T>(
     const { cookies } = await import('next/headers')
     token = cookies().get(payloadToken)
   }
-
   const docs: T[] = await fetch(`${GRAPHQL_API_URL}/api/graphql`, {
     method: 'POST',
     headers: {
@@ -50,7 +54,6 @@ export const fetchDocs = async <T>(
     ?.then(res => res.json())
     ?.then(res => {
       if (res.errors) throw new Error(res?.errors?.[0]?.message ?? 'Error fetching docs')
-
       return res?.data?.[queryMap[collection].key]?.docs
     })
 
